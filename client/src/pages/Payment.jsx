@@ -98,7 +98,7 @@ const Payment = () => {
       }
 
       const keyResponse = await fetch(
-        "http://localhost:5000/api/payment/key"
+        "https://rentbazar-backend.onrender.com/api/payment/key"
       );
 
       const keyData = await keyResponse.json();
@@ -110,7 +110,7 @@ const Payment = () => {
       }
 
       const orderResponse = await fetch(
-        "http://localhost:5000/api/payment/create-order",
+        "https://rentbazar-backend.onrender.com/api/payment/create-order",
         {
           method: "POST",
           headers: {
@@ -193,7 +193,7 @@ const Payment = () => {
             };
 
             const bookingResponse = await fetch(
-              "http://localhost:5000/api/bookings",
+              "https://rentbazar-backend.onrender.com/api/bookings",
               {
                 method: "POST",
 

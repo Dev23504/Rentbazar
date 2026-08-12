@@ -82,12 +82,7 @@ const Bill = () => {
   return (
     <>
       <style>{`
-        /* =========================
-           PRINT SETTINGS
-        ========================== */
-
         @media print {
-
           @page {
             size: A4 portrait;
             margin: 6mm;
@@ -110,7 +105,6 @@ const Bill = () => {
             overflow: hidden !important;
           }
 
-          /* Navbar, buttons, confirmation bar etc. */
           nav,
           header,
           footer,
@@ -148,7 +142,6 @@ const Bill = () => {
             padding: 16px !important;
           }
 
-          /* Header */
           .invoice-header {
             padding-bottom: 10px !important;
           }
@@ -165,7 +158,6 @@ const Bill = () => {
             font-size: 22px !important;
           }
 
-          /* Owner / Customer */
           .details-section {
             padding: 10px 0 !important;
             gap: 20px !important;
@@ -181,7 +173,6 @@ const Bill = () => {
             margin-top: 2px !important;
           }
 
-          /* Rental dates */
           .rental-info {
             padding: 8px !important;
             margin-bottom: 10px !important;
@@ -196,7 +187,6 @@ const Bill = () => {
             margin-top: 2px !important;
           }
 
-          /* Table */
           .invoice-table {
             margin-top: 5px !important;
           }
@@ -233,7 +223,6 @@ const Bill = () => {
             font-size: 9px !important;
           }
 
-          /* Total */
           .total-section {
             margin-top: 10px !important;
           }
@@ -259,7 +248,6 @@ const Bill = () => {
             font-size: 18px !important;
           }
 
-          /* Payment / Item */
           .bottom-section {
             margin-top: 12px !important;
             padding-top: 10px !important;
@@ -279,7 +267,6 @@ const Bill = () => {
             margin-bottom: 2px !important;
           }
 
-          /* Thank you */
           .thank-you {
             margin-top: 10px !important;
             padding: 7px !important;
@@ -303,11 +290,8 @@ const Bill = () => {
 
       <div className="invoice-page min-h-screen bg-gray-100 py-10 px-4">
         <div className="invoice-container max-w-4xl mx-auto">
-
-          {/* Confirmation - Screen Only */}
           <div className="no-print bg-white rounded-xl shadow-sm p-6 mb-6 flex items-center justify-between">
             <div className="flex items-center gap-3">
-
               <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
                 <CheckCircle
                   size={24}
@@ -331,14 +315,9 @@ const Bill = () => {
             </span>
           </div>
 
-          {/* Invoice */}
           <div className="invoice bg-white shadow-xl border border-gray-200">
-
             <div className="invoice-content p-8">
-
-              {/* HEADER */}
               <div className="invoice-header flex justify-between items-start pb-7 border-b-2 border-gray-800">
-
                 <div>
                   <h1 className="invoice-title text-4xl font-black tracking-tight text-green-600">
                     RentBazar
@@ -354,13 +333,11 @@ const Bill = () => {
                 </div>
 
                 <div className="text-right">
-
                   <h2 className="invoice-heading text-3xl font-bold text-gray-800">
                     INVOICE
                   </h2>
 
                   <div className="mt-3 text-sm">
-
                     <p className="text-gray-500">
                       Booking No.
                     </p>
@@ -376,24 +353,17 @@ const Bill = () => {
                     <p className="font-semibold text-gray-800">
                       {bookingDate}
                     </p>
-
                   </div>
                 </div>
-
               </div>
 
-              {/* OWNER + CUSTOMER (OWNER DETAILS FIRST) */}
               <div className="details-section grid md:grid-cols-2 gap-8 py-7">
-
-                {/* 1. OWNER DETAILS FIRST */}
                 <div>
-
                   <h3 className="details-heading text-xs uppercase tracking-widest font-bold text-gray-500 mb-3">
                     Owner Details
                   </h3>
 
                   <div className="border-l-4 border-green-500 pl-4">
-
                     <p className="details-text text-lg font-bold text-gray-800">
                       {owner.name || "N/A"}
                     </p>
@@ -405,19 +375,15 @@ const Bill = () => {
                     <p className="details-text text-sm text-gray-600 break-all">
                       {owner.email || "N/A"}
                     </p>
-
                   </div>
                 </div>
 
-                {/* 2. CUSTOMER DETAILS SECOND */}
                 <div>
-
                   <h3 className="details-heading text-xs uppercase tracking-widest font-bold text-gray-500 mb-3">
                     Bill To (Customer)
                   </h3>
 
                   <div className="border-l-4 border-green-500 pl-4">
-
                     <p className="details-text text-lg font-bold text-gray-800">
                       {customer.name || "N/A"}
                     </p>
@@ -433,15 +399,11 @@ const Bill = () => {
                     <p className="details-text text-sm text-gray-600 mt-1">
                       {customer.address || "N/A"}
                     </p>
-
                   </div>
                 </div>
-
               </div>
 
-              {/* RENTAL INFO */}
               <div className="rental-info grid md:grid-cols-3 gap-4 bg-gray-50 border border-gray-200 p-5 mb-7">
-
                 <div>
                   <p className="rental-label text-xs uppercase font-bold text-gray-500">
                     Rental Start
@@ -471,14 +433,10 @@ const Bill = () => {
                     {days} Day(s)
                   </p>
                 </div>
-
               </div>
 
-              {/* TABLE */}
               <div className="invoice-table border border-gray-300">
-
                 <div className="table-header grid grid-cols-12 bg-gray-800 text-white text-xs uppercase font-bold py-4 px-4">
-
                   <div className="col-span-6">
                     Description
                   </div>
@@ -494,13 +452,10 @@ const Bill = () => {
                   <div className="col-span-2 text-right">
                     Amount
                   </div>
-
                 </div>
 
                 <div className="table-row grid grid-cols-12 items-center py-5 px-4 border-b border-gray-200">
-
                   <div className="col-span-6 flex gap-4 items-center">
-
                     <img
                       src={product.image}
                       alt={product.title}
@@ -511,7 +466,6 @@ const Bill = () => {
                     />
 
                     <div>
-
                       <p className="product-title font-bold text-gray-800">
                         {product.title}
                       </p>
@@ -523,7 +477,6 @@ const Bill = () => {
                       <p className="product-info text-xs text-gray-500 mt-1">
                         {product.location}
                       </p>
-
                     </div>
                   </div>
 
@@ -538,11 +491,9 @@ const Bill = () => {
                   <div className="table-text col-span-2 text-right font-semibold text-gray-800">
                     ₹{rentalCharges}
                   </div>
-
                 </div>
 
                 <div className="security-row grid grid-cols-12 py-4 px-4 border-b border-gray-200">
-
                   <div className="col-span-8"></div>
 
                   <div className="col-span-2 text-right text-sm text-gray-600">
@@ -552,42 +503,28 @@ const Bill = () => {
                   <div className="col-span-2 text-right font-semibold">
                     ₹{securityDeposit}
                   </div>
-
                 </div>
-
               </div>
 
-              {/* TOTAL */}
               <div className="total-section flex justify-end mt-6">
-
                 <div className="total-box w-full md:w-80">
-
                   <div className="total-line flex justify-between py-2 text-sm">
-
                     <span className="text-gray-500">
                       Rental Charges
                     </span>
 
-                    <span>
-                      ₹{rentalCharges}
-                    </span>
-
+                    <span>₹{rentalCharges}</span>
                   </div>
 
                   <div className="total-line flex justify-between py-2 text-sm">
-
                     <span className="text-gray-500">
                       Security Deposit
                     </span>
 
-                    <span>
-                      ₹{securityDeposit}
-                    </span>
-
+                    <span>₹{securityDeposit}</span>
                   </div>
 
                   <div className="total-paid border-t-2 border-gray-800 mt-2 pt-4 flex justify-between items-center">
-
                     <span className="total-text text-lg font-bold">
                       Total Paid
                     </span>
@@ -595,27 +532,18 @@ const Bill = () => {
                     <span className="total-amount text-2xl font-black text-green-600">
                       ₹{total}
                     </span>
-
                   </div>
-
                 </div>
-
               </div>
 
-              {/* PAYMENT + ITEM */}
               <div className="bottom-section grid md:grid-cols-2 gap-8 mt-8 pt-7 border-t border-gray-200">
-
-                {/* PAYMENT */}
                 <div>
-
                   <h3 className="bottom-heading text-xs uppercase tracking-widest font-bold text-gray-500 mb-3">
                     Payment Information
                   </h3>
 
                   <div className="space-y-2 text-sm">
-
                     <div className="bottom-row flex justify-between gap-4">
-
                       <span className="bottom-text text-gray-500">
                         Method
                       </span>
@@ -623,11 +551,9 @@ const Bill = () => {
                       <span className="bottom-text font-semibold">
                         {rentalData.paymentMethod || "Razorpay"}
                       </span>
-
                     </div>
 
                     <div className="bottom-row flex justify-between gap-4">
-
                       <span className="bottom-text text-gray-500">
                         Payment ID
                       </span>
@@ -635,11 +561,9 @@ const Bill = () => {
                       <span className="bottom-text font-mono text-xs break-all text-right">
                         {paymentId}
                       </span>
-
                     </div>
 
                     <div className="bottom-row flex justify-between gap-4">
-
                       <span className="bottom-text text-gray-500">
                         Order ID
                       </span>
@@ -647,23 +571,17 @@ const Bill = () => {
                       <span className="bottom-text font-mono text-xs break-all text-right">
                         {orderId}
                       </span>
-
                     </div>
-
                   </div>
                 </div>
 
-                {/* RENTAL ITEM */}
                 <div>
-
                   <h3 className="bottom-heading text-xs uppercase tracking-widest font-bold text-gray-500 mb-3">
                     Rental Item
                   </h3>
 
                   <div className="space-y-2 text-sm">
-
                     <div className="bottom-row flex justify-between">
-
                       <span className="bottom-text text-gray-500">
                         Category
                       </span>
@@ -671,11 +589,9 @@ const Bill = () => {
                       <span className="bottom-text font-semibold">
                         {product.category}
                       </span>
-
                     </div>
 
                     <div className="bottom-row flex justify-between">
-
                       <span className="bottom-text text-gray-500">
                         Location
                       </span>
@@ -683,11 +599,9 @@ const Bill = () => {
                       <span className="bottom-text font-semibold">
                         {product.location}
                       </span>
-
                     </div>
 
                     <div className="bottom-row flex justify-between">
-
                       <span className="bottom-text text-gray-500">
                         Status
                       </span>
@@ -695,17 +609,12 @@ const Bill = () => {
                       <span className="bottom-text font-bold text-green-600">
                         {rentalData.status || "Confirmed"}
                       </span>
-
                     </div>
-
                   </div>
                 </div>
-
               </div>
 
-              {/* THANK YOU */}
               <div className="thank-you mt-8 bg-green-50 border border-green-200 p-4 text-center">
-
                 <p className="thank-title text-sm font-semibold text-green-800">
                   Thank you for choosing RentBazar
                 </p>
@@ -713,16 +622,13 @@ const Bill = () => {
                 <p className="thank-text text-xs text-green-700 mt-1">
                   Please keep this invoice for your rental records.
                 </p>
-
               </div>
 
               <div className="computer-text mt-8 text-center text-xs text-gray-400">
                 This is a computer-generated invoice and does not require a signature.
               </div>
 
-              {/* BUTTONS - SCREEN ONLY */}
               <div className="no-print flex gap-4 mt-8">
-
                 <button
                   onClick={handlePrint}
                   className="flex-1 border border-gray-300 hover:border-green-600 hover:text-green-600 py-3 rounded-xl font-semibold flex items-center justify-center gap-2"
@@ -738,9 +644,7 @@ const Bill = () => {
                   <ArrowLeft size={18} />
                   Continue Renting
                 </button>
-
               </div>
-
             </div>
           </div>
         </div>

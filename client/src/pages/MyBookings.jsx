@@ -23,7 +23,7 @@ const MyBookings = () => {
       }
 
       const response = await fetch(
-        "http://localhost:5000/api/bookings/my-bookings",
+        "https://rentbazar-backend.onrender.com/api/bookings/my-bookings",
         {
           method: "GET",
           headers: {
