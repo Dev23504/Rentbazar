@@ -6,135 +6,147 @@ const adminMiddleware = require("../middleware/adminMiddleware");
 
 const router = express.Router();
 
-router.get("/dashboard", authMiddleware, adminMiddleware, async (req, res) => {
-  try {
-    const totalUsers = await User.countDocuments();
+router.get(
+  "/dashboard",
+  authMiddleware,
+  adminMiddleware,
+  async (req, res) => {
+    try {
+      const users = await User.find()
+        .select("-password")
+        .sort({ createdAt: -1 })
+        .lean();
 
-    const totalBookings = await Booking.countDocuments();
+      const bookings = await Booking.find()
+        .populate("user", "name email role")
+        .sort({ createdAt: -1 })
+        .lean();
 
-    const confirmedBookings = await Booking.countDocuments({
-      status: "Confirmed",
-    });
+      const totalUsers = users.length;
+      const totalBookings = bookings.length;
 
-    const paidBookings = await Booking.countDocuments({
-      paymentStatus: "paid",
-    });
+      const confirmedBookings = bookings.filter(
+        (booking) => booking.status === "Confirmed"
+      ).length;
 
-    const revenueResult = await Booking.aggregate([
-      {
-        $match: {
-          paymentStatus: "paid",
-        },
-      },
-      {
-        $group: {
-          _id: null,
-          totalRevenue: {
-            $sum: "$amount",
-          },
-        },
-      },
-    ]);
+      const paidBookings = bookings.filter(
+        (booking) => booking.paymentStatus === "paid"
+      ).length;
 
-    const totalRevenue =
-      revenueResult.length > 0
-        ? revenueResult[0].totalRevenue
-        : 0;
+      const totalRevenue = bookings
+        .filter((booking) => booking.paymentStatus === "paid")
+        .reduce(
+          (total, booking) =>
+            total + Number(booking.amount || 0),
+          0
+        );
 
-    res.status(200).json({
-      success: true,
-      stats: {
+      res.status(200).json({
+        success: true,
+        users,
+        bookings,
         totalUsers,
         totalBookings,
+        totalRevenue,
         confirmedBookings,
         paidBookings,
-        totalRevenue,
-      },
-    });
-  } catch (error) {
-    console.log("ADMIN DASHBOARD ERROR:", error);
+      });
+    } catch (error) {
+      console.log("ADMIN DASHBOARD ERROR:", error);
 
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-});
-
-
-router.get("/users", authMiddleware, adminMiddleware, async (req, res) => {
-  try {
-    const users = await User.find()
-      .select("-password")
-      .sort({ createdAt: -1 })
-      .lean();
-
-    res.status(200).json({
-      success: true,
-      count: users.length,
-      users,
-    });
-  } catch (error) {
-    console.log("ADMIN USERS ERROR:", error);
-
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-});
-
-
-router.get("/bookings", authMiddleware, adminMiddleware, async (req, res) => {
-  try {
-    const bookings = await Booking.find()
-      .populate("user", "name email role")
-      .sort({ createdAt: -1 })
-      .lean();
-
-    res.status(200).json({
-      success: true,
-      count: bookings.length,
-      bookings,
-    });
-  } catch (error) {
-    console.log("ADMIN BOOKINGS ERROR:", error);
-
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-});
-
-
-router.get("/bookings/:id", authMiddleware, adminMiddleware, async (req, res) => {
-  try {
-    const booking = await Booking.findById(req.params.id)
-      .populate("user", "name email role")
-      .lean();
-
-    if (!booking) {
-      return res.status(404).json({
+      res.status(500).json({
         success: false,
-        message: "Booking not found",
+        message: error.message,
       });
     }
-
-    res.status(200).json({
-      success: true,
-      booking,
-    });
-  } catch (error) {
-    console.log("ADMIN BOOKING DETAILS ERROR:", error);
-
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
   }
-});
+);
 
+router.get(
+  "/users",
+  authMiddleware,
+  adminMiddleware,
+  async (req, res) => {
+    try {
+      const users = await User.find()
+        .select("-password")
+        .sort({ createdAt: -1 })
+        .lean();
+
+      res.status(200).json({
+        success: true,
+        count: users.length,
+        users,
+      });
+    } catch (error) {
+      console.log("ADMIN USERS ERROR:", error);
+
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+);
+
+router.get(
+  "/bookings",
+  authMiddleware,
+  adminMiddleware,
+  async (req, res) => {
+    try {
+      const bookings = await Booking.find()
+        .populate("user", "name email role")
+        .sort({ createdAt: -1 })
+        .lean();
+
+      res.status(200).json({
+        success: true,
+        count: bookings.length,
+        bookings,
+      });
+    } catch (error) {
+      console.log("ADMIN BOOKINGS ERROR:", error);
+
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+);
+
+router.get(
+  "/bookings/:id",
+  authMiddleware,
+  adminMiddleware,
+  async (req, res) => {
+    try {
+      const booking = await Booking.findById(req.params.id)
+        .populate("user", "name email role")
+        .lean();
+
+      if (!booking) {
+        return res.status(404).json({
+          success: false,
+          message: "Booking not found",
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        booking,
+      });
+    } catch (error) {
+      console.log("ADMIN BOOKING DETAILS ERROR:", error);
+
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+);
 
 router.delete(
   "/bookings/:id",
@@ -167,7 +179,6 @@ router.delete(
     }
   }
 );
-
 
 router.delete(
   "/users/:id",
@@ -204,6 +215,5 @@ router.delete(
     }
   }
 );
-
 
 module.exports = router;
