@@ -42,7 +42,7 @@ const AdminDashboard = () => {
       setError("");
 
       const response = await fetch(
-        "http://localhost:5000/api/admin/dashboard",
+        "https://rentbazar-backend.onrender.com/api/admin/dashboard",
         {
           headers: {
             Authorization: `Bearer ${token}`,
