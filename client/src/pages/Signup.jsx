@@ -1,16 +1,6 @@
-
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  User,
-  Mail,
-  Lock,
-  Eye,
-  EyeOff,
-  ArrowRight,
-} from "lucide-react";
-
-const API_URL = "https://rentbazar-backend.onrender.com";
+import { User, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -23,42 +13,22 @@ const Signup = () => {
   });
 
   const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("error");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] =
-    useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    setMessage("");
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
 
-    const name = formData.name.trim();
-    const email = formData.email.trim().toLowerCase();
-    const password = formData.password;
-
-    if (!name || !email || !password) {
-      setMessage("Please fill in all required fields");
-      return;
-    }
-
-    if (password.length < 6) {
-      setMessage("Password must be at least 6 characters");
-      return;
-    }
-
-    if (password !== formData.confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       setMessage("Passwords do not match");
       return;
     }
@@ -66,32 +36,25 @@ const Signup = () => {
     try {
       setLoading(true);
 
-      const response = await fetch(`${API_URL}/api/auth/signup`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-        }),
-      });
+      const response = await fetch(
+        "https://rentbazar-backend.onrender.com/api/auth/signup",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: formData.name.trim(),
+            email: formData.email.trim(),
+            password: formData.password,
+          }),
+        }
+      );
 
-      const data = await response.json().catch(() => ({}));
+      const data = await response.json();
 
       if (!response.ok) {
-        setMessage(data.message || "Signup failed. Please try again.");
-        setMessageType("error");
-        return;
-      }
-
-      if (!data.token || !data.user) {
-        setMessage(
-          data.message ||
-            "Account response is incomplete. Please check your backend."
-        );
-        setMessageType("error");
+        setMessage(data.message || "Signup failed");
         return;
       }
 
@@ -100,45 +63,33 @@ const Signup = () => {
 
       window.dispatchEvent(new Event("authChanged"));
 
-      setMessageType("success");
-      setMessage("Account created successfully!");
-
       navigate("/", { replace: true });
     } catch (error) {
       console.error("Signup Error:", error);
-      setMessage(
-        "Server connection failed. Please try again in a moment."
-      );
-      setMessageType("error");
+      setMessage("Server connection failed");
     } finally {
       setLoading(false);
     }
   };
 
-  const inputClass =
-    "w-full bg-gray-50 border border-gray-200 rounded-xl py-3.5 pl-11 pr-12 outline-none transition-all duration-300 focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-100";
-
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-green-50 via-white to-emerald-100 flex items-center justify-center px-4 py-10">
-      <div className="absolute -top-24 -left-24 w-72 h-72 bg-green-300/30 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute -top-24 -left-24 w-72 h-72 bg-green-300/30 rounded-full blur-3xl animate-pulse"></div>
 
-      <div className="absolute -bottom-24 -right-24 w-80 h-80 bg-emerald-300/30 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute -bottom-24 -right-24 w-80 h-80 bg-emerald-300/30 rounded-full blur-3xl animate-pulse"></div>
 
-      <div className="absolute top-1/4 right-10 w-16 h-16 bg-green-200/40 rounded-full blur-xl animate-bounce" />
+      <div className="absolute top-1/4 right-10 w-16 h-16 bg-green-200/40 rounded-full blur-xl animate-bounce"></div>
 
       <div className="relative w-full max-w-md">
-        <div className="absolute -inset-1 bg-gradient-to-r from-green-400 to-emerald-500 rounded-3xl blur opacity-20" />
+        <div className="absolute -inset-1 bg-gradient-to-r from-green-400 to-emerald-500 rounded-3xl blur opacity-20"></div>
 
-        <div className="relative bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl p-6 sm:p-8 border border-white/70">
+        <div className="relative bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/70 animate-[fadeIn_0.6s_ease-out]">
           <div className="text-center mb-7">
-            <Link
-              to="/"
-              className="mx-auto w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-200 mb-4 hover:rotate-6 transition-transform duration-300"
-            >
+            <div className="mx-auto w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-200 mb-4 rotate-0 hover:rotate-6 transition-transform duration-300">
               <span className="text-white text-2xl font-extrabold">
                 R
               </span>
-            </Link>
+            </div>
 
             <h2 className="text-3xl font-extrabold text-gray-900">
               Create Account
@@ -150,14 +101,7 @@ const Signup = () => {
           </div>
 
           {message && (
-            <div
-              role="alert"
-              className={`mb-5 p-3 rounded-xl border text-sm text-center ${
-                messageType === "success"
-                  ? "bg-green-50 border-green-200 text-green-700"
-                  : "bg-red-50 border-red-200 text-red-600"
-              }`}
-            >
+            <div className="mb-5 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm text-center animate-[shake_0.4s_ease-in-out]">
               {message}
             </div>
           )}
@@ -173,12 +117,10 @@ const Signup = () => {
                 type="text"
                 name="name"
                 placeholder="Full Name"
-                autoComplete="name"
                 value={formData.name}
                 onChange={handleChange}
                 required
-                maxLength={100}
-                className={`${inputClass} pr-4`}
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3.5 pl-11 pr-4 outline-none transition-all duration-300 focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-100"
               />
             </div>
 
@@ -192,11 +134,10 @@ const Signup = () => {
                 type="email"
                 name="email"
                 placeholder="Email Address"
-                autoComplete="email"
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className={`${inputClass} pr-4`}
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3.5 pl-11 pr-4 outline-none transition-all duration-300 focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-100"
               />
             </div>
 
@@ -210,20 +151,15 @@ const Signup = () => {
                 type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Password"
-                autoComplete="new-password"
                 value={formData.password}
                 onChange={handleChange}
-                minLength={6}
                 required
-                className={inputClass}
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3.5 pl-11 pr-12 outline-none transition-all duration-300 focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-100"
               />
 
               <button
                 type="button"
-                aria-label={
-                  showPassword ? "Hide password" : "Show password"
-                }
-                onClick={() => setShowPassword((prev) => !prev)}
+                onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-green-600 transition"
               >
                 {showPassword ? (
@@ -244,22 +180,16 @@ const Signup = () => {
                 type={showConfirmPassword ? "text" : "password"}
                 name="confirmPassword"
                 placeholder="Confirm Password"
-                autoComplete="new-password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
-                className={inputClass}
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3.5 pl-11 pr-12 outline-none transition-all duration-300 focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-100"
               />
 
               <button
                 type="button"
-                aria-label={
-                  showConfirmPassword
-                    ? "Hide confirm password"
-                    : "Show confirm password"
-                }
                 onClick={() =>
-                  setShowConfirmPassword((prev) => !prev)
+                  setShowConfirmPassword(!showConfirmPassword)
                 }
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-green-600 transition"
               >
@@ -274,11 +204,11 @@ const Signup = () => {
             <button
               type="submit"
               disabled={loading}
-              className="group w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed text-white py-3.5 rounded-xl font-bold shadow-lg shadow-green-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl flex items-center justify-center gap-2"
+              className="group w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:opacity-60 text-white py-3.5 rounded-xl font-bold shadow-lg shadow-green-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
-                  <span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                  <span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>
                   Creating Account...
                 </>
               ) : (
@@ -294,9 +224,9 @@ const Signup = () => {
           </form>
 
           <div className="flex items-center gap-3 my-6">
-            <div className="h-px bg-gray-200 flex-1" />
+            <div className="h-px bg-gray-200 flex-1"></div>
             <span className="text-xs text-gray-400">OR</span>
-            <div className="h-px bg-gray-200 flex-1" />
+            <div className="h-px bg-gray-200 flex-1"></div>
           </div>
 
           <p className="text-center text-gray-600">
@@ -319,3 +249,4 @@ const Signup = () => {
 };
 
 export default Signup;
+ 
