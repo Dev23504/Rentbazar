@@ -18,25 +18,42 @@ const allowedOrigins = [
   "http://localhost:5173",
   "https://rentbazar-by-dev.netlify.app",
   process.env.CLIENT_URL,
-].filter(Boolean);
+].filter(Boolean).map((origin) => origin.replace(/\/$/, ""));
 
 const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    const normalizedOrigin = origin
+      ? origin.replace(/\/$/, "")
+      : null;
+
+    if (!normalizedOrigin || allowedOrigins.includes(normalizedOrigin)) {
       return callback(null, true);
     }
 
     console.error("Blocked CORS origin:", origin);
     return callback(new Error("Origin not allowed by CORS"));
   },
-  methods: ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
+  methods: [
+    "GET",
+    "HEAD",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+  ],
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+  ],
   optionsSuccessStatus: 204,
   maxAge: 86400,
 };
 
 app.use(cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
+
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -81,7 +98,11 @@ if (fs.existsSync(productRoutesPath)) {
 }
 
 app.use((req, res) => {
-  console.warn("API ROUTE NOT FOUND:", req.method, req.originalUrl);
+  console.warn(
+    "API ROUTE NOT FOUND:",
+    req.method,
+    req.originalUrl
+  );
 
   res.status(404).json({
     success: false,
@@ -132,6 +153,7 @@ async function startServer() {
     app.listen(PORT, "0.0.0.0", () => {
       console.log(`RentBazar server running on port ${PORT}`);
       console.log("Auth routes mounted at /api/auth");
+      console.log("KYC routes mounted at /api/kyc");
       console.log("Admin routes mounted at /api/admin");
       console.log("Allowed frontend origins:", allowedOrigins);
     });
