@@ -10,7 +10,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API = import.meta.env.VITE_API_URL || "https://rentbazar-backend.onrender.com";
 
 export default function AdminKYC() {
   const [requests, setRequests] = useState([]);

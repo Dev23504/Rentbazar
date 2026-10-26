@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Package, RefreshCw, Trash2 } from "lucide-react";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API = import.meta.env.VITE_API_URL || "https://rentbazar-backend.onrender.com";
 const PRODUCT_API = `${API}/api/products`;
 
 export default function AdminProducts() {
