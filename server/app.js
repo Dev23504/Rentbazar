@@ -16,22 +16,27 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:5173",
+  "https://rentbazar-by-dev.netlify.app",
   process.env.CLIENT_URL,
 ].filter(Boolean);
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
 
-      return callback(new Error("Origin not allowed by CORS"));
-    },
-    credentials: true,
-  })
-);
+    console.error("Blocked CORS origin:", origin);
+    return callback(new Error("Origin not allowed by CORS"));
+  },
+  methods: ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+  optionsSuccessStatus: 204,
+  maxAge: 86400,
+};
 
+app.use(cors(corsOptions));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -91,15 +96,19 @@ app.use((error, req, res, next) => {
     return next(error);
   }
 
-  const statusCode =
-    error.message === "Origin not allowed by CORS"
-      ? 403
-      : error.status || 500;
+  if (error.message === "Origin not allowed by CORS") {
+    return res.status(403).json({
+      success: false,
+      message: "Frontend origin is not allowed by CORS.",
+    });
+  }
+
+  const statusCode = error.status || 500;
 
   res.status(statusCode).json({
     success: false,
     message:
-      process.env.NODE_ENV === "production" && statusCode === 500
+      process.env.NODE_ENV === "production" && statusCode >= 500
         ? "Internal server error"
         : error.message,
   });
@@ -122,7 +131,9 @@ async function startServer() {
 
     app.listen(PORT, "0.0.0.0", () => {
       console.log(`RentBazar server running on port ${PORT}`);
+      console.log("Auth routes mounted at /api/auth");
       console.log("Admin routes mounted at /api/admin");
+      console.log("Allowed frontend origins:", allowedOrigins);
     });
   } catch (error) {
     console.error("Server Startup Error:", error.message);
