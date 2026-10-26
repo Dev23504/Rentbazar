@@ -20,7 +20,7 @@ const imageFallback =
     `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500"><rect width="100%" height="100%" fill="#E4ECE2"/><text x="50%" y="50%" fill="#6B7F73" font-family="sans-serif" font-size="28" text-anchor="middle" dominant-baseline="middle">Image not available</text></svg>`
   );
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL || "https://rentbazar-backend.onrender.com";
 const SECURITY_DEPOSIT = 500;
 
 const inputClass =
