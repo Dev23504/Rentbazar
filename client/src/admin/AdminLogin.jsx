@@ -1,123 +1,207 @@
 
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ShieldCheck, Eye, EyeOff } from "lucide-react";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  ShieldCheck,
+  ArrowLeft,
+} from "lucide-react";
 
-const API = import.meta.env.VITE_API_URL || "https://rentbazar-backend.onrender.com";
+const API = "https://rentbazar-backend.onrender.com";
 
-export default function AdminLogin() {
+const AdminLogin = () => {
   const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
-  async function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage("");
     setLoading(true);
-    setError("");
 
     try {
       const response = await fetch(`${API}/api/auth/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          password,
+        }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Login failed");
+        setMessage(data.message || "Invalid email or password.");
+        return;
       }
 
-      const token = data.token || data.accessToken || data.user?.token;
-      const user = data.user || data.data?.user;
-
-      if (!token) {
-        throw new Error("Login response mein token nahi mila.");
+      if (!data.user || !data.token) {
+        setMessage("Login information was not received.");
+        return;
       }
 
-      if (!user || user.role !== "admin") {
-        throw new Error("Admin access required.");
+      if (data.user.role?.toLowerCase() !== "admin") {
+        setMessage("This account does not have admin access.");
+        return;
       }
 
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
-      navigate("/admin");
-    } catch (err) {
-      setError(err.message);
+      window.dispatchEvent(new Event("authChanged"));
+
+      navigate("/admin", { replace: true });
+    } catch (error) {
+      console.error("Admin Login Error:", error);
+      setMessage(
+        "Server connection failed. Please check your internet and try again."
+      );
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-2xl"
-      >
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-600">
-          <ShieldCheck size={32} />
-        </div>
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-950 via-gray-900 to-emerald-950 flex items-center justify-center px-4 py-10">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-24 -left-24 w-80 h-80 bg-emerald-500/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 -right-32 w-96 h-96 bg-green-500/20 rounded-full blur-3xl" />
+        <div className="absolute -bottom-32 left-1/3 w-80 h-80 bg-teal-400/10 rounded-full blur-3xl" />
+      </div>
 
-        <h1 className="mt-5 text-center text-2xl font-bold text-slate-900">
-          RentBazar Admin
-        </h1>
-        <p className="mt-2 text-center text-sm text-slate-500">
-          Sign in with your administrator account
-        </p>
-
-        {error && (
-          <div className="mt-5 rounded-xl bg-red-50 p-3 text-sm text-red-700">
-            {error}
-          </div>
-        )}
-
-        <label className="mt-6 block text-sm font-semibold text-slate-700">
-          Email
-        </label>
-        <input
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="admin@example.com"
-          className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500"
-        />
-
-        <label className="mt-4 block text-sm font-semibold text-slate-700">
-          Password
-        </label>
-        <div className="mt-2 flex items-center rounded-xl border border-slate-300 pr-3 focus-within:border-indigo-500">
-          <input
-            type={showPassword ? "text" : "password"}
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter admin password"
-            className="w-full rounded-xl px-4 py-3 outline-none"
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword((value) => !value)}
-            className="text-slate-500"
-            aria-label="Toggle password visibility"
+      <div className="relative z-10 w-full max-w-md">
+        <div className="bg-white rounded-3xl shadow-2xl border border-white/20 p-8 sm:p-10">
+          <Link
+            to="/login"
+            className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-green-700"
           >
-            {showPassword ? <EyeOff size={19} /> : <Eye size={19} />}
-          </button>
+            <ArrowLeft size={17} />
+            Back to User Login
+          </Link>
+
+          <div className="text-center mt-7 mb-8">
+            <Link
+              to="/"
+              className="inline-block text-3xl font-extrabold text-green-600 tracking-tight"
+            >
+              RentBazar
+            </Link>
+
+            <div className="mt-5 flex justify-center">
+              <div className="w-20 h-20 rounded-2xl bg-green-100 flex items-center justify-center shadow-inner">
+                <ShieldCheck size={42} className="text-green-700" />
+              </div>
+            </div>
+
+            <h1 className="text-3xl font-bold text-gray-800 mt-5">
+              Admin Login
+            </h1>
+            <p className="text-gray-500 mt-2">
+              Sign in to access the administration panel
+            </p>
+          </div>
+
+          {message && (
+            <div
+              role="alert"
+              className="mb-5 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm"
+            >
+              {message}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Admin Email
+              </label>
+
+              <div className="relative">
+                <Mail
+                  size={19}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                />
+                <input
+                  type="email"
+                  placeholder="Enter admin email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  autoComplete="username"
+                  className="w-full border border-gray-200 bg-gray-50 rounded-xl py-3.5 pl-11 pr-4 outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-100"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Password
+              </label>
+
+              <div className="relative">
+                <Lock
+                  size={19}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter admin password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  autoComplete="current-password"
+                  className="w-full border border-gray-200 bg-gray-50 rounded-xl py-3.5 pl-11 pr-12 outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-100"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-green-600"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff size={19} /> : <Eye size={19} />}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:opacity-60 text-white py-3.5 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2"
+            >
+              {loading ? "Signing In..." : "Admin Sign In"}
+              {!loading && <ArrowRight size={19} />}
+            </button>
+          </form>
+
+          <div className="mt-6 bg-green-50 border border-green-100 rounded-xl p-4 text-center">
+            <ShieldCheck
+              size={22}
+              className="mx-auto text-green-700 mb-2"
+            />
+            <p className="text-sm text-green-800">
+              Restricted access for authorized administrators only.
+            </p>
+          </div>
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="mt-6 w-full rounded-xl bg-indigo-600 py-3 font-semibold text-white hover:bg-indigo-700 disabled:opacity-60"
-        >
-          {loading ? "Signing in..." : "Admin Login"}
-        </button>
-      </form>
+        <p className="text-center text-sm text-gray-400 mt-6">
+          © 2026 RentBazar. All rights reserved.
+        </p>
+      </div>
     </div>
   );
-}
+};
+
+export default AdminLogin;
